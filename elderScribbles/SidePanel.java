@@ -78,7 +78,7 @@ public class SidePanel extends JPanel{
             labels.get(spacing).setBackground(Color.LIGHT_GRAY);
             if (MouseState.getInstance().getState()){
                 labels.get(spacing).setForeground(Color.GREEN);
-                if (currentPress != -1){
+                if (currentPress != -1 && currentPress != spacing){
                     labels.get(currentPress).setForeground(Color.black);
                     
                 }
