@@ -17,4 +17,8 @@ public class Note {
 		this.notes = notes;
 	}
 	
+	public void addNotes(String notes) {
+		this.notes = this.notes + notes;
+	}
+	
 }
