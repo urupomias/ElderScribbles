@@ -20,7 +20,7 @@ public class NoteContainer {
 		    	  String data = myReader.nextLine();
 		    	  note.addNotes(data);
 		    	if(myReader.nextLine() == "//*") {
-		    		Note note = new Note();
+		    		//Note note = new Note();
 		    	}
 
 		      }
