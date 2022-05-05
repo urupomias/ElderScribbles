@@ -8,7 +8,7 @@ public class CenterPanel {
 
     public CenterPanel(){
         panel = new JPanel();
-        panel.setBackground(Color.white);
+        panel.setBackground(Color.DARK_GRAY);
         //panel.setPreferredSize(new Dimension(250,250));
     }
 
