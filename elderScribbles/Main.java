@@ -25,7 +25,8 @@ public class Main{
 		
 		while (true){
 			try {
-				TimeUnit.SECONDS.sleep(1/2);
+				//TimeUnit.SECONDS.sleep(1);
+				TimeUnit.MILLISECONDS.sleep(10);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}

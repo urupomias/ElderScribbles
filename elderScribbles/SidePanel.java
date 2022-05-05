@@ -69,6 +69,8 @@ public class SidePanel extends JPanel{
     }
 
     public void updateMouse(double x, double y){
+        // Handles highlighting and selecting the headers.
+        // TODO: Doesn't currently send the main note window which note is selected etc.
         int spacing;
         int height = (int)y - this.getLocationOnScreen().y; 
         spacing = height / 30;
@@ -96,12 +98,19 @@ public class SidePanel extends JPanel{
     }
 
     private void addNoteheaders(ArrayList<Header> headerList, int subCount){
-        JLabel label;
-        String spaces = "";
-        for (int k = 0; k < subCount; k++){
-            spaces = spaces + "    ";
-        }
+        // Recieves the list of all headers, the headers in the list can have subheaders as a list,
+        // which can have subheaders as a list and so on.. 
+
+        // The commented code is junk, im tired will delete later <.<
+
+        //JLabel label;
+        //String spaces = "";
+        //for (int k = 0; k < subCount; k++){
+        //    spaces = spaces + "    ";
+        //}
         for (int i = 0; i < headerList.size(); i++){
+            addLabel(headerList.get(i), subCount);
+            /*
             label = new JLabel();
             label.setText(spaces + headerList.get(i).getName() + "                                      ");
             label.setFont(new Font("Calibri", Font.BOLD, (20)));
@@ -109,24 +118,46 @@ public class SidePanel extends JPanel{
             label.setBackground(Color.GRAY);
             this.add(label);
             labels.add(label);
-
+            */
             if (headerList.get(i).getSubheaders().size() > 0){
-                for (int j = 0; j < headerList.get(i).getSubheaders().size(); j++){
-                    addNoteheaders(headerList.get(i).getSubheaders(), (subCount + 1));
-                }
+                addNoteheaders(headerList.get(i).getSubheaders(), subCount + 1);
+                //for (int j = 0; j < headerList.get(i).getSubheaders().size(); j++){
+                    //addNoteheaders(headerList.get(i).getSubheaders(), (subCount + 1));
+                //}
             }
         }
     }
 
+    private void addLabel(Header h,int subCount){
+            JLabel label;
+            String spaces = "";
+            for (int k = 0; k < subCount; k++){
+                spaces = spaces + "    ";
+            }
+            label = new JLabel();
+            label.setText(spaces + h.getName() + "                                      ");
+            label.setFont(new Font("Calibri", Font.BOLD, (20)));
+            label.setOpaque(true);
+            label.setBackground(Color.GRAY);
+            this.add(label);
+            labels.add(label);
+    }
+
     public void createTestHeaders(){
+        // Creates some dummy headers for testing
         testheaders.add(new Header("First header", "First subheader"));
         testheaders.add(new Header("2nd header", "2nd subheader"));
         testheaders.add(new Header("3rd header no sub"));
+        Header x = new Header("Multiple subheaders");
+        x.addSubheader(new Header("Subheader", "Level 3 subheader"));
+        x.addSubheader(new Header("Subheader two"));
+        x.addSubheader(new Header("Subheader three"));
+        testheaders.add(x);
         testheaders.add(new Header("fourth header", "First subheader"));
     }
 
     public class Header{
-        // This is for testing purposes, this info will come from the notecontainer in the future. 
+        // This is for testing purposes, this info will come from the notecontainer(?) in the future. 
         private String name;
         private ArrayList<Header> subheaders = new ArrayList<>();
         
@@ -142,6 +173,9 @@ public class SidePanel extends JPanel{
         }
         public ArrayList<Header> getSubheaders(){
             return subheaders;
+        }
+        public void addSubheader(Header x){
+            subheaders.add(x);
         }
     }
 }
