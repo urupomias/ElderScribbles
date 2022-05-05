@@ -59,12 +59,7 @@ public class SidePanel extends JPanel{
         this.setAutoscrolls(true);
         sPanel = new JScrollPane(this);
         sPanel.setPreferredSize(new Dimension(250,250));
-        JLabel label2 = new JLabel();
-        label2.setText("Second thing");
-        label2.setFont(new Font("Calibri", Font.BOLD, 30));
-        label2.setVerticalTextPosition(JLabel.TOP);
-        label2.setBounds(0, 0, 300, 20);
-        this.add(label2);
+        
         
 
     }
