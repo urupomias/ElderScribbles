@@ -16,9 +16,11 @@ public class Main{
 	public static void main(String [] args) {
 		MainFrame mainframe = new MainFrame();
 		SidePanel sidePanel = new SidePanel();
+		CenterPanel centerpanel = new CenterPanel();
 		sidePanel.addMouseListener(mainframe);
+		centerpanel.addMouseListener(mainframe);
 		mainframe.addsPanel(sidePanel.getPanel(), "WEST");
-		mainframe.addPanel(new CenterPanel().getPanel(), "CENTER");
+		mainframe.addPanel(centerpanel.getPanel(), "CENTER");
 		mainframe.addPanel(new TopPanel().getPanel(), "NORTH");
 		mainframe.setVisible();
 
