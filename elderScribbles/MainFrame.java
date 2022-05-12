@@ -17,11 +17,12 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.KeyListener;
 
 
-public class MainFrame extends JFrame implements MouseListener{
+public class MainFrame extends JFrame implements MouseListener, KeyListener{
     
-    //JFrame frame;
+    SidePanel sidePanel;
 
     
    
@@ -33,6 +34,7 @@ public class MainFrame extends JFrame implements MouseListener{
         this.setSize(1500,800);
         this.setLayout(new BorderLayout());
         this.addMouseListener(this);
+        //this.addKeyListener(this);
         
     }
 
@@ -59,6 +61,7 @@ public class MainFrame extends JFrame implements MouseListener{
 
     public void addsPanel(JScrollPane panel, String location){
         // Tän vois varmasti tehdä jotenkin järkevämmin <.<
+        this.add(panel, BorderLayout.WEST);
         switch(location){
             case "WEST":
                 this.add(panel, BorderLayout.WEST);
@@ -78,6 +81,10 @@ public class MainFrame extends JFrame implements MouseListener{
         this.setVisible(true);
     }
 
+    public void addPanels(SidePanel sidePanel){
+        this.sidePanel = sidePanel;
+    }
+
     @Override
     public void mouseClicked(MouseEvent e){
 
@@ -85,7 +92,13 @@ public class MainFrame extends JFrame implements MouseListener{
     @Override
     public void mousePressed(MouseEvent e){
         System.out.println("Pressed the mouse");
-        MouseState.getInstance().setState(true);
+        if (e.getButton() == MouseEvent.BUTTON1){
+            MouseState.getInstance().setState(true);
+        }
+        if (e.getButton() == MouseEvent.BUTTON3){
+            MouseState.getInstance().setState2(true);
+        }
+        
     }
     @Override
     public void mouseReleased(MouseEvent e){
@@ -96,6 +109,24 @@ public class MainFrame extends JFrame implements MouseListener{
         
     }
     public void mouseExited(MouseEvent e){
+        
+    }
+
+    @Override
+    public void keyTyped(KeyEvent e) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void keyPressed(KeyEvent e) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void keyReleased(KeyEvent e) {
+        // TODO Auto-generated method stub
         
     }
 

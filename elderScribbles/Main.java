@@ -18,6 +18,7 @@ public class Main{
 		SidePanel sidePanel = new SidePanel();
 		sidePanel.addMouseListener(mainframe);
 		mainframe.addsPanel(sidePanel.getPanel(), "WEST");
+		sidePanel.addKeyListener(mainframe);
 		mainframe.addPanel(new CenterPanel().getPanel(), "CENTER");
 		mainframe.addPanel(new TopPanel().getPanel(), "NORTH");
 		mainframe.setVisible();
@@ -25,21 +26,23 @@ public class Main{
 		
 		while (true){
 			try {
-				//TimeUnit.SECONDS.sleep(1);
+
 				TimeUnit.MILLISECONDS.sleep(10);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
 			double mouseX = MouseInfo.getPointerInfo().getLocation().getX();
         	double mouseY = MouseInfo.getPointerInfo().getLocation().getY();
-       	    System.out.println("X:" + mouseX);
-        	System.out.println("Y:" + mouseY);
+       	    //System.out.println("X:" + mouseX);
+        	//System.out.println("Y:" + mouseY);
 
 			// Checks if the mouse is within the sidepanel, sends update command if yes.
 			if (mouseX > sidePanel.getPanel().getLocationOnScreen().x && mouseX < sidePanel.getPanel().getLocationOnScreen().x + 230){
 				sidePanel.updateMouse(mouseX, mouseY);
 			}
-			System.out.println(sidePanel.getPanel().getLocationOnScreen());
+			MouseState.getInstance().setState(false);
+			MouseState.getInstance().setState2(false);
+			//System.out.println(sidePanel.getPanel().getLocationOnScreen());
 		}
 		
 	}
