@@ -16,7 +16,9 @@ public class Main{
 	public static void main(String [] args) {
 		MainFrame mainframe = new MainFrame();
 		SidePanel sidePanel = new SidePanel();
+		CenterPanel centerpanel = new CenterPanel();
 		sidePanel.addMouseListener(mainframe);
+		centerpanel.addMouseListener(mainframe);
 		mainframe.addsPanel(sidePanel.getPanel(), "WEST");
 		sidePanel.addKeyListener(mainframe);
 		mainframe.addPanel(new CenterPanel().getPanel(), "CENTER");
