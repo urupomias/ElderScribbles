@@ -9,7 +9,10 @@ import java.awt.FlowLayout;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
@@ -21,6 +24,8 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.plaf.ComponentUI;
 
+import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
@@ -44,6 +49,7 @@ public class SidePanel extends JPanel implements KeyListener{
         this.setLayout(new FlowLayout(FlowLayout.LEADING,0,5));
         this.setBackground(Color.gray);
         this.setPreferredSize(new Dimension(230,5000));
+        
         createTestHeaders();
         addNoteheaders(headers);
         this.setAutoscrolls(true);
@@ -51,6 +57,7 @@ public class SidePanel extends JPanel implements KeyListener{
         sPanel.getVerticalScrollBar().setUnitIncrement(16);
         sPanel.setPreferredSize(new Dimension(250,250));
         createHeader("This would be the first header.", "newheader");
+        
     }
 
     public JScrollPane getPanel(){
@@ -58,7 +65,7 @@ public class SidePanel extends JPanel implements KeyListener{
     }
 
     public void updateMouse(double x, double y){
-        
+        // Does stuff based on where the mouse is and if it was clicked.
         int height = (int)y - this.getLocationOnScreen().y; 
         int left = (int)x - this.getLocationOnScreen().x;
         spacing = height / 30;
@@ -71,11 +78,16 @@ public class SidePanel extends JPanel implements KeyListener{
             textLabels.get(spacing).setBackground(Color.LIGHT_GRAY);
             if (MouseState.getInstance().getState()){
                 if (left < 15){
+                    int[] pos = getHeader(">>NEW HEADER<<");
+                        if (pos != null){
+                            headers.get(pos[0]).remove(pos[1]);
+                        }
                     if(textLabels.size() == spacing + 1){
                         if(newLastHeader){
                             headers.remove(headers.size()-1);
                             newLastHeader = false;
                         }
+                        
                         ArrayList<SidePanelHeader> newUpperHeader = new ArrayList<SidePanelHeader>();
                         newUpperHeader.add(new SidePanelHeader(">>NEW HEADER<<", 20));
                         headers.add(newUpperHeader);
@@ -88,6 +100,12 @@ public class SidePanel extends JPanel implements KeyListener{
                     }
                     else if(getHeader(textLabels.get(spacing).getName())[2] < 2){
                         //createHeader(textLabels.get(spacing).getName(), "NEW HEADER" + dab);
+                        /*
+                        if (newLastHeader){
+                            headers.remove(headers.size()-1);
+                            newLastHeader = false;
+                        }
+                        */
                         headerNamer(spacing);
                     }
                     
@@ -96,18 +114,38 @@ public class SidePanel extends JPanel implements KeyListener{
                 }
             }
             else if (MouseState.getInstance().getState2()){
-                int index2[] = getHeader(textLabels.get(spacing).getName());
-                headers.get(index2[0]).remove(index2[3]);
+                popupMenu(spacing,left,height);
+                //int index2[] = getHeader(textLabels.get(spacing).getName());
+                //headers.get(index2[0]).remove(index2[3]);
                 MouseState.getInstance().setState2(false);
             }
           }
             if (currentHighlight != -1 && currentHighlight != spacing){
-                textLabels.get(currentHighlight).setBackground(Color.GRAY);
+                if (textLabels.size() > currentHighlight){
+                    textLabels.get(currentHighlight).setBackground(Color.GRAY);
+                }
+                
             }
             currentHighlight = spacing;
         }
     }
 
+    public void popupMenu(int index,int x,int y){
+        // Right click menu.
+        JPopupMenu menu = new JPopupMenu();
+        JMenuItem item = new JMenuItem("Rename");
+        JMenuItem item2 = new JMenuItem("Delete");
+        menu.add(item);
+        menu.add(item2);
+        menu.show(sPanel, x, y);
+        /*
+        this.addMouseListener(new MouseAdapter(){
+            public void mouseClicked (MouseEvent e){
+                menu.show(sPanel, e.getX(), e.getY());
+            }
+        });
+        */
+    }
 
     private void headerNamer(int spacing){
         newLastHeader = false;
@@ -115,6 +153,7 @@ public class SidePanel extends JPanel implements KeyListener{
     }
 
     private void addNoteheaders(ArrayList<ArrayList<SidePanelHeader>> headerList){
+        // Adds all the headers in the proper order
         textLabels = new ArrayList<>();
         for (int i = 0; i < headers.size();i++){
             for (int j = 0;j < headers.get(i).size();j++){
@@ -125,7 +164,7 @@ public class SidePanel extends JPanel implements KeyListener{
     }
 
     private void addLabel(SidePanelHeader h){
-
+        // This adds the actual stuff on screen.
         if(h.getIndentation() == 20){
             JTextField textField = new JTextField();
             textField.setPreferredSize(new Dimension(300,30));
@@ -155,8 +194,14 @@ public class SidePanel extends JPanel implements KeyListener{
             label.setForeground(Color.BLACK);
             label.setOpaque(true);
             label.setBackground(Color.GRAY);
-            
+            /*-------------------------------
+            JPopupMenu menu = new JPopupMenu();
+            menu.add(label);
+            JMenuItem item = new JMenuItem("DAB");
+            menu.add(item);
+            *///-------------------------------
             this.add(label);
+            //label.addMouseListener(new PopupListener());
             textLabels.add(label);    
         }
     }
@@ -231,6 +276,7 @@ public class SidePanel extends JPanel implements KeyListener{
         }
         
         headers.get(index[0]).add(index[3] + 1, newheader);;
+
         this.removeAll();
         addNoteheaders(headers);
         this.revalidate();
@@ -288,7 +334,12 @@ public class SidePanel extends JPanel implements KeyListener{
         }
         else if (e.getKeyCode() == KeyEvent.VK_ESCAPE){
             int index2[] = getHeader(">>NEW HEADER<<");
-            headers.get(index2[0]).remove(index2[3]);
+            if(newLastHeader){
+                headers.remove(headers.size()-1);
+            }
+            else{
+                headers.get(index2[0]).remove(index2[3]);
+            }
             newheader = null;
             this.removeAll();
             addNoteheaders(headers);
