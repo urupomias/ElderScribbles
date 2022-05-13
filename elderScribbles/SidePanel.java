@@ -37,7 +37,8 @@ public class SidePanel extends JPanel implements KeyListener{
     private ArrayList<ArrayList<SidePanelHeader>> headers = new ArrayList<ArrayList<SidePanelHeader>>();
     private ArrayList<JLabel> textLabels = new ArrayList<>();
     private int currentHighlight = -1;
-    private int dab = 0; //REMOVE
+    private int currentSelected = -1;
+    private String selectedName;
     private String textParentHeader;
     private JTextField newheader;
     private int spacing;
@@ -79,9 +80,9 @@ public class SidePanel extends JPanel implements KeyListener{
             if (MouseState.getInstance().getState()){
                 if (left < 15){
                     int[] pos = getHeader(">>NEW HEADER<<");
-                        if (pos != null){
-                            headers.get(pos[0]).remove(pos[1]);
-                        }
+                    if (pos != null){
+                        headers.get(pos[0]).remove(pos[1]);
+                    }
                     if(textLabels.size() == spacing + 1){
                         if(newLastHeader){
                             headers.remove(headers.size()-1);
@@ -109,8 +110,21 @@ public class SidePanel extends JPanel implements KeyListener{
                         headerNamer(spacing);
                     }
                     
+                    MouseState.getInstance().setState(false); 
+                }
+                else {
+                    textLabels.get(spacing).setForeground(Color.GREEN);
+                    selectedName = textLabels.get(spacing).getName();
+                    if (currentSelected >= 0 && currentSelected != spacing){
+                        textLabels.get(currentSelected).setForeground(Color.BLACK);
+                        
+                    }
                     MouseState.getInstance().setState(false);
-                    dab++;
+                    this.removeAll();
+                        addNoteheaders(headers);
+                        this.revalidate();
+                        this.repaint();
+                    currentSelected = spacing;
                 }
             }
             else if (MouseState.getInstance().getState2()){
@@ -191,7 +205,14 @@ public class SidePanel extends JPanel implements KeyListener{
             }
             label.setText(text += h.getText() + "                                      ");
             label.setFont(new Font("Calibri", Font.BOLD, (20)));
-            label.setForeground(Color.BLACK);
+
+            if (h.getText().equals(selectedName)){
+                label.setForeground(Color.green);
+                currentSelected = textLabels.size()-1;
+            }
+            else{
+                label.setForeground(Color.BLACK);
+            }
             label.setOpaque(true);
             label.setBackground(Color.GRAY);
             /*-------------------------------

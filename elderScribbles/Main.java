@@ -22,7 +22,7 @@ public class Main{
 		mainframe.addsPanel(sidePanel.getPanel(), "WEST");
 		sidePanel.addKeyListener(mainframe);
 		mainframe.addPanel(new CenterPanel().getPanel(), "CENTER");
-		mainframe.addPanel(new TopPanel().getPanel(), "NORTH");
+		mainframe.addPanel(new TopPanel(mainframe), "NORTH");
 		mainframe.setVisible();
 
 		
