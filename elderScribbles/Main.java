@@ -42,6 +42,9 @@ public class Main{
 			if (mouseX > sidePanel.getPanel().getLocationOnScreen().x && mouseX < sidePanel.getPanel().getLocationOnScreen().x + 230){
 				sidePanel.updateMouse(mouseX, mouseY);
 			}
+			else{
+				sidePanel.offScreen();
+			}
 			MouseState.getInstance().setState(false);
 			MouseState.getInstance().setState2(false);
 			//System.out.println(sidePanel.getPanel().getLocationOnScreen());
