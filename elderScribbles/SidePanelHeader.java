@@ -8,7 +8,7 @@ import java.awt.Font;
 import java.util.ArrayList;
 import java.util.List;
 import java.awt.FlowLayout;
-
+import java.awt.MouseInfo;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 
@@ -29,8 +29,14 @@ public class SidePanelHeader{
     public String getText(){
         return text;
     }
+    public void setText(String text){
+       this.text = text;
+    }
     public int getIndentation(){
         return indentation1;
+    }
+    public void setIndentation(int indentation){
+        this.indentation1 = indentation;
     }
 
 }

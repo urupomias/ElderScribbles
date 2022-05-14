@@ -11,6 +11,7 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollBar;
@@ -22,15 +23,17 @@ import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
+import javax.swing.event.SwingPropertyChangeSupport;
 import javax.swing.plaf.ComponentUI;
 
 import java.awt.event.MouseEvent;
 import java.awt.event.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.ActionListener;
 
 
-public class SidePanel extends JPanel implements KeyListener{
+public class SidePanel extends JPanel implements KeyListener, ActionListener{
     private JScrollPane sPanel;
     private ArrayList<ArrayList<SidePanelHeader>> headers = new ArrayList<ArrayList<SidePanelHeader>>();
     private ArrayList<JLabel> textLabels = new ArrayList<>();
@@ -39,8 +42,12 @@ public class SidePanel extends JPanel implements KeyListener{
     private String selectedName;
     private String textParentHeader;
     private JTextField newheader;
+    private JTextField renamedheader;
     private int spacing;
     private boolean newLastHeader = false;
+    private int allowedHierarchy = 2; // This determines how many levels of subheaders you can have.
+    private boolean renaming = false;
+    private int[] lastpos;
     
     
 
@@ -66,23 +73,9 @@ public class SidePanel extends JPanel implements KeyListener{
         if (pos == null){
             return true;
         }
-        int indentation = headers.get(pos[0]).get(pos[1]).getIndentation();
-        switch(indentation){
-            case 0:
-                if (left < 15){
-                    return true;
-                }
-                return false;
-            case 1:
-                if (left < 30 && left > 15){
-                    return true;
-                }
-                return false;     
-            case 2:
-                if (left < 45){
-                    return true;
-                }
-                return false; 
+        int indentation = 15 + headers.get(pos[0]).get(pos[1]).getIndentation() * 15;
+        if (left < indentation && left > indentation - 20){
+            return true;
         }
         return false;
 
@@ -99,6 +92,10 @@ public class SidePanel extends JPanel implements KeyListener{
           if (!textLabels.get(spacing).getText().equals(">>NULL<<")){
             textLabels.get(spacing).setBackground(Color.LIGHT_GRAY);
             if (MouseState.getInstance().getState()){
+                if(renaming){
+                    headers.get(lastpos[0]).get(lastpos[1]).setIndentation(lastpos[2]);
+                    renaming = false;
+                }
                 if (clickedNew(spacing, left)){
                     int[] pos = getHeader(">>NEW HEADER<<");
                     if (pos != null){
@@ -120,7 +117,7 @@ public class SidePanel extends JPanel implements KeyListener{
                         this.repaint();
                         
                     }
-                    else if(getHeader(textLabels.get(spacing).getName())[2] < 2){
+                    else if(getHeader(textLabels.get(spacing).getName())[2] < allowedHierarchy){
                         headerNamer(spacing);
                     }
                     
@@ -142,7 +139,7 @@ public class SidePanel extends JPanel implements KeyListener{
                 }
             }
             else if (MouseState.getInstance().getState2()){
-                popupMenu(spacing,left,height);
+                popupMenu(spacing,x,y);
                 //int index2[] = getHeader(textLabels.get(spacing).getName());
                 //headers.get(index2[0]).remove(index2[3]);
                 MouseState.getInstance().setState2(false);
@@ -169,14 +166,24 @@ public class SidePanel extends JPanel implements KeyListener{
             currentHighlight = -1;
         }
     }
-    public void popupMenu(int index,int x,int y){
+    public void popupMenu(int index,double x,double y){
         // Right click menu.
         JPopupMenu menu = new JPopupMenu();
         JMenuItem item = new JMenuItem("Rename");
         JMenuItem item2 = new JMenuItem("Delete");
+        item.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent e){
+                renameHeader(index);
+            }
+        });
+        item2.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent e){
+                removeHeaderPopUp(index);
+            }
+        });
         menu.add(item);
         menu.add(item2);
-        menu.show(sPanel, x, y);
+        menu.show(sPanel, (int)x, (int)y - 50);
     }
 
     private void headerNamer(int spacing){
@@ -209,6 +216,17 @@ public class SidePanel extends JPanel implements KeyListener{
             textField.requestFocus();
             newheader = textField;
         }
+        else if(h.getIndentation() == 25){
+            JTextField textField = new JTextField();
+            textField.setPreferredSize(new Dimension(300,30));
+            textField.setText(headers.get(lastpos[0]).get(lastpos[1]).getText());
+            textField.setFont(new Font("Calibri", Font.BOLD, (20)));
+            textField.setForeground(Color.black);
+            textField.addKeyListener(this);
+            this.add(textField);
+            textLabels.add(new JLabel(">>NULL<<"));
+            renamedheader = textField;
+        }
         else{
             JLabel label;
             String text = "";
@@ -218,7 +236,7 @@ public class SidePanel extends JPanel implements KeyListener{
             }
             label = new JLabel();
             label.setName(h.getText());
-            if (h.getIndentation() < 2){
+            if (h.getIndentation() < allowedHierarchy){
                 text += "+";
             }
             label.setText(text += h.getText() + "                                                                               ");
@@ -319,8 +337,54 @@ public class SidePanel extends JPanel implements KeyListener{
         this.repaint();
     }
 
-    private void removeHeader(String name){
-        // TODO: find header-> find its subheaders->remove them all.
+    private void removeHeader(int index){
+        int[] pos = getHeader(textLabels.get(index).getName());
+        if (pos[1] == 0){
+            headers.remove(pos[0]);
+        }
+        else{
+            headers.get(pos[0]).remove(pos[1]);
+            while(headers.get(pos[0]).size() - 1 >= pos[1]){
+                if(headers.get(pos[0]).get(pos[1]).getIndentation() > pos[2]){
+                    headers.get(pos[0]).remove(pos[1]);
+                }
+                else {
+                    break;
+                }
+            
+        }
+        }
+        
+        this.removeAll();
+        addNoteheaders(headers);
+        this.revalidate();
+        this.repaint();
+    }
+
+    private void removeHeaderPopUp(int index){
+        int option = JOptionPane.showConfirmDialog(sPanel, "Do you want to delete " + textLabels.get(index).getName() + " and all of its subheaders?", "Are you sure?", JOptionPane.YES_NO_OPTION);
+        if (option == 0){
+            System.out.println("Yes");
+            removeHeader(index);
+        }
+        if(option == 1){
+            System.out.println("No");
+        }
+    }
+
+    private void renameHeader(int index){
+        if(renaming){
+            headers.get(lastpos[0]).get(lastpos[1]).setIndentation(lastpos[2]);
+        }
+        renaming = true;
+        int[] pos = getHeader(textLabels.get(index).getName());
+        lastpos = pos;
+        //headers.get(pos[0]).get(pos[1]).setText(">>RENAME HEADER<<");
+        headers.get(pos[0]).get(pos[1]).setIndentation(25);
+        this.removeAll();
+        addNoteheaders(headers);
+        this.revalidate();
+        this.repaint();
     }
 
     public void createTestHeaders(){
@@ -345,39 +409,64 @@ public class SidePanel extends JPanel implements KeyListener{
     @Override
     public void keyPressed(KeyEvent e) {
         if (e.getKeyCode() == KeyEvent.VK_ENTER){
-            if (newLastHeader){
+            if(renaming){
                 int number = 0;
-                String text = newheader.getText();
+                String text = renamedheader.getText();
                 while (duplicateHeader(text)){
-                    text = newheader.getText() + "(" + number + ")";
+                    text = renamedheader.getText() + "(" + number + ")";
                     number++;
                 }
-                headers.get(headers.size()-1).remove(0);
-                headers.get(headers.size()-1).add(new SidePanelHeader(text, 0));
-                newLastHeader = false;
-                newheader = null;
+                headers.get(lastpos[0]).get(lastpos[1]).setText(text);
+                headers.get(lastpos[0]).get(lastpos[1]).setIndentation(lastpos[2]);
+                renaming = false;
                 this.removeAll();
                 addNoteheaders(headers);
                 this.revalidate();
                 this.repaint();
             }
-            else if (newheader != null){
-                int index2[] = getHeader(">>NEW HEADER<<");
-                headers.get(index2[0]).remove(index2[3]);
-                createHeader(textParentHeader, newheader.getText());
-                newheader = null;
-                
-            }
+            else{
+                if (newLastHeader){
+                    int number = 0;
+                    String text = newheader.getText();
+                    while (duplicateHeader(text)){
+                        text = newheader.getText() + "(" + number + ")";
+                        number++;
+                    }
+                    headers.get(headers.size()-1).remove(0);
+                    headers.get(headers.size()-1).add(new SidePanelHeader(text, 0));
+                    newLastHeader = false;
+                    newheader = null;
+                    this.removeAll();
+                    addNoteheaders(headers);
+                    this.revalidate();
+                    this.repaint();
+                }
+                else if (newheader != null){
+                    int index2[] = getHeader(">>NEW HEADER<<");
+                    headers.get(index2[0]).remove(index2[3]);
+                    createHeader(textParentHeader, newheader.getText());
+                    newheader = null;
+                    
+                }
+            }   
+            
         }
         else if (e.getKeyCode() == KeyEvent.VK_ESCAPE){
-            int index2[] = getHeader(">>NEW HEADER<<");
-            if(newLastHeader){
-                headers.remove(headers.size()-1);
+            if(renaming){
+                headers.get(lastpos[0]).get(lastpos[1]).setIndentation(lastpos[2]);
+                renaming = false;
             }
             else{
-                headers.get(index2[0]).remove(index2[3]);
+                int index2[] = getHeader(">>NEW HEADER<<");
+                if(newLastHeader){
+                    headers.remove(headers.size()-1);
+                }
+                else{
+                    headers.get(index2[0]).remove(index2[3]);
+                }
+                newheader = null;
             }
-            newheader = null;
+            
             this.removeAll();
             addNoteheaders(headers);
             this.revalidate();
