@@ -20,9 +20,8 @@ public class Main{
 		sidePanel.addMouseListener(mainframe);
 		centerpanel.addMouseListener(mainframe);
 		mainframe.addsPanel(sidePanel.getPanel(), "WEST");
-		sidePanel.addKeyListener(mainframe);
 		mainframe.addPanel(new CenterPanel().getPanel(), "CENTER");
-		mainframe.addPanel(new TopPanel(mainframe), "NORTH");
+		mainframe.addPanel(new TopPanel(mainframe,sidePanel), "NORTH");
 		mainframe.setVisible();
 
 		

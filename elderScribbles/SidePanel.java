@@ -56,13 +56,14 @@ public class SidePanel extends JPanel implements KeyListener, ActionListener{
         this.fr = fr;
         this.setLayout(new FlowLayout(FlowLayout.LEADING,0,5));
         this.setBackground(Color.gray);
-        this.setPreferredSize(new Dimension(230,5000));
+        this.setPreferredSize(new Dimension(230,headers.size() * 30));
         createTestHeaders();
-        addNoteheaders(headers);
+        
         this.setAutoscrolls(true);
         sPanel = new JScrollPane(this);
         sPanel.getVerticalScrollBar().setUnitIncrement(16);
         sPanel.setPreferredSize(new Dimension(250,250));
+        addNoteheaders(headers);
         
     }
 
@@ -199,12 +200,15 @@ public class SidePanel extends JPanel implements KeyListener, ActionListener{
 
     // Adds all the headers in the proper order
     private void addNoteheaders(ArrayList<ArrayList<SidePanelHeader>> headerList){
+        
         textLabels = new ArrayList<>();
         for (int i = 0; i < headers.size();i++){
             for (int j = 0;j < headers.get(i).size();j++){
                 addLabel(headers.get(i).get(j));
             }
         } 
+        this.setPreferredSize(new Dimension(230,textLabels.size() * 30 ));
+        sPanel.setViewportView(this);
         addLabel(new SidePanelHeader("+ Add new header", 0));
     }
 
@@ -379,6 +383,19 @@ public class SidePanel extends JPanel implements KeyListener, ActionListener{
         }
         if(option == 1){
             System.out.println("No");
+        }
+    }
+
+    public void switchToHeader(String name){
+        for (int i = 0; i < textLabels.size();i++){
+            if (textLabels.get(i).getName().equals(name)){
+                textLabels.get(i).setForeground(Color.GREEN);
+                selectedName = textLabels.get(i).getName();
+            }
+            if (currentSelected >= 0 && currentSelected != i){
+                textLabels.get(currentSelected).setForeground(Color.BLACK);
+                
+            }
         }
     }
 
