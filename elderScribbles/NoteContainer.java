@@ -175,15 +175,12 @@ public class NoteContainer {
 						bw.write(line);
 						bw.newLine();
 					}
-					else{
-						break;
-					}
-					
+					else if (!deleting){
+						bw.write(line);
+						bw.newLine();
+					}					
 				}
-				else if (!deleting){
-					bw.write(line);
-					bw.newLine();
-				}
+				
 			}
 			else{
 				if (!deleting){

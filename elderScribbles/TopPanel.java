@@ -27,7 +27,7 @@ public class TopPanel extends JPanel implements ActionListener, KeyListener {
     SidePanel sidePanel;
     NoteContainer noteContainer;
 
-    public TopPanel(MainFrame fr, SidePanel sidePanel, NoteContainer noteContainer){ 
+    public TopPanel(MainFrame fr, SidePanel sidePanel, NoteContainer noteContainer, String filename){ 
         this.fr = fr;
         this.noteContainer = noteContainer;
         this.sidePanel = sidePanel;
@@ -106,6 +106,7 @@ public class TopPanel extends JPanel implements ActionListener, KeyListener {
                 if(newfile.createNewFile()){
                     filenames.add(s + ".txt");
                     currentSelection = s;
+                    noteContainer.changeToNote(s + ".txt");
                 }
                 else{
                     System.out.println("Already exists");
@@ -128,7 +129,9 @@ public class TopPanel extends JPanel implements ActionListener, KeyListener {
             
             if (!menu.getSelectedItem().equals("+New note")){
                 currentSelection = menu.getSelectedItem().toString();
+                noteContainer.changeToNote(menu.getSelectedItem().toString() + ".txt");
             }
+            
             // Centerpanel.GetNotes(menu.getSelectedItem()); ---- This tells the centerpanel to read from a specific note.
             else{
                 newNote();

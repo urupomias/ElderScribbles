@@ -57,6 +57,7 @@ public class SidePanel extends JPanel implements KeyListener, ActionListener{
 
     public void setHeaders(ArrayList<SidePanelHeader> list){
         headers = new ArrayList<>();
+        currentSelected = 0;
         int k = -1;
         for(int i = 0; i < list.size();i++){
             if(list.get(i).getIndentation() == 0){
@@ -417,6 +418,7 @@ public class SidePanel extends JPanel implements KeyListener, ActionListener{
 
     // For changing to a specific header through the search function.
     public void switchToHeader(String name){
+        
         for (int i = 0; i < textLabels.size();i++){
             if (textLabels.get(i).getName().equals(name)){
                 textLabels.get(i).setForeground(Color.GREEN);
@@ -424,7 +426,6 @@ public class SidePanel extends JPanel implements KeyListener, ActionListener{
             }
             if (currentSelected >= 0 && currentSelected != i){
                 textLabels.get(currentSelected).setForeground(Color.BLACK);
-                
             }
         }
     }
