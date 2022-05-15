@@ -90,15 +90,15 @@ public class SidePanel extends JPanel implements KeyListener, ActionListener{
 
         if(textLabels.size() > spacing && spacing >= 0){
           if (!textLabels.get(spacing).getText().equals(">>NULL<<")){
-            textLabels.get(spacing).setBackground(Color.LIGHT_GRAY);
-            if (MouseState.getInstance().getState()){
+            textLabels.get(spacing).setBackground(Color.LIGHT_GRAY); // Highlights the text you're hovering over.
+            if (MouseState.getInstance().getState()){ // if mouse is clicked.
                 if(renaming){
                     headers.get(lastpos[0]).get(lastpos[1]).setIndentation(lastpos[2]);
                     renaming = false;
                 }
-                if (clickedNew(spacing, left)){
-                    int[] pos = getHeader(">>NEW HEADER<<");
-                    if (pos != null){
+                if (clickedNew(spacing, left)){// Checks if we clicked on the +, makes a new header if yes.
+                    int[] pos = getHeader(">>NEW HEADER<<"); 
+                    if (pos != null){   // This cleans up any previously made textboxes that weren't created.
                         headers.get(pos[0]).remove(pos[1]);
                     }
                     if(textLabels.size() == spacing + 1){
@@ -124,28 +124,26 @@ public class SidePanel extends JPanel implements KeyListener, ActionListener{
                     MouseState.getInstance().setState(false); 
                 }
                 else {
-                    textLabels.get(spacing).setForeground(Color.GREEN);
+                    textLabels.get(spacing).setForeground(Color.GREEN); // This highlights the selected header with green
                     selectedName = textLabels.get(spacing).getName();
                     if (currentSelected >= 0 && currentSelected != spacing){
-                        textLabels.get(currentSelected).setForeground(Color.BLACK);
+                        textLabels.get(currentSelected).setForeground(Color.BLACK); // Unhighlights the previously selected header
                         
                     }
                     MouseState.getInstance().setState(false);
                     this.removeAll();
-                        addNoteheaders(headers);
-                        this.revalidate();
-                        this.repaint();
+                    addNoteheaders(headers);
+                    this.revalidate();
+                    this.repaint();
                     currentSelected = spacing;
                 }
             }
             else if (MouseState.getInstance().getState2()){
                 popupMenu(spacing,x,y);
-                //int index2[] = getHeader(textLabels.get(spacing).getName());
-                //headers.get(index2[0]).remove(index2[3]);
                 MouseState.getInstance().setState2(false);
             }
           }
-            if (currentHighlight != -1 && currentHighlight != spacing){
+            if (currentHighlight != -1 && currentHighlight != spacing){ // unhighlights the stuff you're no longer hovering over.
                 if (textLabels.size() > currentHighlight){
                     textLabels.get(currentHighlight).setBackground(Color.GRAY);
                 }
@@ -157,8 +155,8 @@ public class SidePanel extends JPanel implements KeyListener, ActionListener{
 
     }
 
+    // Unhighlights the label if mouse outside of the panel.
     public void offScreen(){
-        // Unhighlights the label if mouse outside of the panel.
         if (currentHighlight != -1){
             if (textLabels.size() > currentHighlight){
                 textLabels.get(currentHighlight).setBackground(Color.GRAY);
@@ -166,8 +164,12 @@ public class SidePanel extends JPanel implements KeyListener, ActionListener{
             currentHighlight = -1;
         }
     }
+
+    // Right click menu.
     public void popupMenu(int index,double x,double y){
-        // Right click menu.
+        if (index == textLabels.size()-1){
+            return;
+        }
         JPopupMenu menu = new JPopupMenu();
         JMenuItem item = new JMenuItem("Rename");
         JMenuItem item2 = new JMenuItem("Delete");
@@ -186,13 +188,14 @@ public class SidePanel extends JPanel implements KeyListener, ActionListener{
         menu.show(sPanel, (int)x, (int)y - 50);
     }
 
+    // I forgot why I made this but it works ok.. something to do with making new headers.
     private void headerNamer(int spacing){
         newLastHeader = false;
         createHeader(textLabels.get(spacing).getName(), ">>NEW HEADER<<");
     }
 
+    // Adds all the headers in the proper order
     private void addNoteheaders(ArrayList<ArrayList<SidePanelHeader>> headerList){
-        // Adds all the headers in the proper order
         textLabels = new ArrayList<>();
         for (int i = 0; i < headers.size();i++){
             for (int j = 0;j < headers.get(i).size();j++){
@@ -202,9 +205,9 @@ public class SidePanel extends JPanel implements KeyListener, ActionListener{
         addLabel(new SidePanelHeader("+ ADD NEW HEADER ++", 0));
     }
 
+    // This adds the actual stuff on screen.
     private void addLabel(SidePanelHeader h){
-        // This adds the actual stuff on screen.
-        if(h.getIndentation() == 20){
+        if(h.getIndentation() == 20){ // Checks if the header is a textbox
             JTextField textField = new JTextField();
             textField.setPreferredSize(new Dimension(300,30));
             textField.setFont(new Font("Calibri", Font.BOLD, (20)));
@@ -216,7 +219,7 @@ public class SidePanel extends JPanel implements KeyListener, ActionListener{
             textField.requestFocus();
             newheader = textField;
         }
-        else if(h.getIndentation() == 25){
+        else if(h.getIndentation() == 25){ // Check if the header is a textbox, but also getting renamed
             JTextField textField = new JTextField();
             textField.setPreferredSize(new Dimension(300,30));
             textField.setText(headers.get(lastpos[0]).get(lastpos[1]).getText());
@@ -227,7 +230,7 @@ public class SidePanel extends JPanel implements KeyListener, ActionListener{
             textLabels.add(new JLabel(">>NULL<<"));
             renamedheader = textField;
         }
-        else{
+        else{   // Takes the text header given to the method, and turns it into a label, and then adds it to the screen.
             JLabel label;
             String text = "";
             
@@ -290,6 +293,7 @@ public class SidePanel extends JPanel implements KeyListener, ActionListener{
         return null;
     }
 
+    // Checks if a header with the name given exists already
     private boolean duplicateHeader(String text){
         for (int i = 0; i < headers.size();i++){
             for (int j = 0;j < headers.get(i).size();j++){
@@ -301,6 +305,7 @@ public class SidePanel extends JPanel implements KeyListener, ActionListener{
         return false;
     }
 
+    // Handles creating a new header.
     private void createHeader(String mainheader, String name){
         System.out.println(mainheader);
         int[] index = getHeader(mainheader);
@@ -337,6 +342,7 @@ public class SidePanel extends JPanel implements KeyListener, ActionListener{
         this.repaint();
     }
 
+    // Removes a header in the specified index(1 is highest on the sidepanel and so on), as well as all the children of said header.
     private void removeHeader(int index){
         int[] pos = getHeader(textLabels.get(index).getName());
         if (pos[1] == 0){
@@ -361,6 +367,7 @@ public class SidePanel extends JPanel implements KeyListener, ActionListener{
         this.repaint();
     }
 
+    // Creates a popupwindow to make sure you don't accidentally delete any headers.
     private void removeHeaderPopUp(int index){
         int option = JOptionPane.showConfirmDialog(sPanel, "Do you want to delete " + textLabels.get(index).getName() + " and all of its subheaders?", "Are you sure?", JOptionPane.YES_NO_OPTION);
         if (option == 0){
@@ -372,6 +379,7 @@ public class SidePanel extends JPanel implements KeyListener, ActionListener{
         }
     }
 
+    // Renames the header in the selected position. Or more accurately turns it into a text box, which then gets renamed once the user presses enter(keyPressed method)
     private void renameHeader(int index){
         if(renaming){
             headers.get(lastpos[0]).get(lastpos[1]).setIndentation(lastpos[2]);
@@ -387,6 +395,7 @@ public class SidePanel extends JPanel implements KeyListener, ActionListener{
         this.repaint();
     }
 
+    // These are here just to populate the sidebar.
     public void createTestHeaders(){
         ArrayList<SidePanelHeader> test = new ArrayList<>();
         
@@ -402,7 +411,6 @@ public class SidePanel extends JPanel implements KeyListener, ActionListener{
 
     @Override
     public void keyTyped(KeyEvent e) {
-        // TODO Auto-generated method stub
         
     }
 
@@ -477,7 +485,7 @@ public class SidePanel extends JPanel implements KeyListener, ActionListener{
 
     @Override
     public void keyReleased(KeyEvent e) {
-        // TODO Auto-generated method stub
+        
         
     }
 }
