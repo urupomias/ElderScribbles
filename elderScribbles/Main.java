@@ -15,23 +15,34 @@ public class Main{
 	
 
 	public static void main(String [] args) {
+		StartUpPane startuppane = new StartUpPane();
+        while(startuppane.hasFrame()) {
+            try {
+                TimeUnit.MILLISECONDS.sleep(10);
+            }catch(InterruptedException e){
+                e.printStackTrace();
+            }
+        }
+		System.out.println("nimi : " + startuppane.getChosenNotes());
+
 		MainFrame mainframe = new MainFrame();
 		SidePanel sidePanel = new SidePanel(mainframe);
 		CenterPanel centerpanel = new CenterPanel();
-		NoteContainer noteContainer = new NoteContainer("sdfggh.txt", centerpanel, sidePanel);
+		NoteContainer noteContainer = new NoteContainer(startuppane.getChosenNotes(), centerpanel, sidePanel);
 		sidePanel.setNoteContainer(noteContainer);
 		sidePanel.addMouseListener(mainframe);
 		centerpanel.addMouseListener(mainframe);
 		mainframe.addsPanel(sidePanel.getPanel(), "WEST");
-		mainframe.addPanel(new CenterPanel().getPanel(), "CENTER");
-		mainframe.addPanel(new TopPanel(mainframe,sidePanel,noteContainer,"sdfggh.txt"), "NORTH");
+		mainframe.addPanel(centerpanel, "CENTER");
+		mainframe.addPanel(new TopPanel(mainframe,sidePanel,noteContainer,startuppane.getChosenNotes()), "NORTH");
 		mainframe.setVisible();
 
-		
+		int counter= 0;
 		while (true){
 			try {
 
 				TimeUnit.MILLISECONDS.sleep(10);
+				counter++;
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
@@ -52,6 +63,15 @@ public class Main{
 				MouseState.getInstance().setState2(false);
 			}catch(IOException e){
 				e.printStackTrace();
+			}
+			if(counter == 2000){
+				try{
+					noteContainer.saveCurrent();
+					counter = 0;
+				}catch(IOException x){
+					x.printStackTrace();
+				}
+				
 			}
 			
 			//System.out.println(sidePanel.getPanel().getLocationOnScreen());

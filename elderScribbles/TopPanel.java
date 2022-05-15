@@ -31,6 +31,7 @@ public class TopPanel extends JPanel implements ActionListener, KeyListener {
         this.fr = fr;
         this.noteContainer = noteContainer;
         this.sidePanel = sidePanel;
+        currentSelection = filename;
         this.setBackground(Color.black);
         this.setPreferredSize(new Dimension(250,30));
         setLayout(new BorderLayout());
@@ -59,7 +60,7 @@ public class TopPanel extends JPanel implements ActionListener, KeyListener {
 
             }
         }
-        if(filenames.size() > 0){
+        if(filenames.size() > 0 && currentSelection == null){
             currentSelection = filenames.get(filenames.size()-1).substring(0, filenames.get(filenames.size()-1).lastIndexOf("."));
         }
         updateTopPanel();

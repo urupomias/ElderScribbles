@@ -69,7 +69,6 @@ public class StartUpPane implements ActionListener{
             try{
                 int i = file.getCanonicalPath().lastIndexOf("\\");
                 filenames.add(file.getCanonicalPath().substring(i + 1));
-                System.out.println(file.getCanonicalPath().substring(i + 1));
             }catch(Exception e){
 
             }
@@ -97,7 +96,6 @@ public class StartUpPane implements ActionListener{
         String action = ae.getActionCommand();
         if (action.equals("accepted")) {
             if(menu.getSelectedItem().equals("*NEW NOTES*")) {
-            	System.out.println("whopee");
             	try{
 
                     String s = (String)JOptionPane.showInputDialog(
@@ -112,6 +110,7 @@ public class StartUpPane implements ActionListener{
                         File newfile = new File(s + ".txt");
                         if(newfile.createNewFile()){
                             //notecontainer.changeToNote(s + ".txt");
+                            chosenNotes = s + ".txt";
                         }
                         else{
                             System.out.println("Already exists");
@@ -126,7 +125,6 @@ public class StartUpPane implements ActionListener{
            
             }else {
             	//notecontainer.changeToNote(menu.getSelectedItem().toString());
-            	System.out.println("awwwyiss");
             	this.chosenNotes = menu.getSelectedItem().toString();
             	frame.setVisible(false);
             }

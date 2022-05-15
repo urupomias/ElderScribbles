@@ -420,7 +420,7 @@ public class SidePanel extends JPanel implements KeyListener, ActionListener{
 
     // For changing to a specific header through the search function.
     public void switchToHeader(String name){
-        
+        noteContainer.selectHeader(name);
         for (int i = 0; i < textLabels.size();i++){
             if (textLabels.get(i).getName().equals(name)){
                 textLabels.get(i).setForeground(Color.GREEN);

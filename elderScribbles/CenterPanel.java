@@ -22,7 +22,7 @@ public class CenterPanel extends JPanel {
         this.setPreferredSize(new Dimension(200,200));
         //panel.setPreferredSize(new Dimension(250,250));
         //this.textArea = new JTextArea(44,110);
-        textArea = new JTextArea("asdasf");
+        textArea = new JTextArea();
         textArea.setPreferredSize(this.getSize());
         scrollPane = new JScrollPane(textArea); 
         this.add(scrollPane,BorderLayout.CENTER);
@@ -32,15 +32,19 @@ public class CenterPanel extends JPanel {
         
     }
 
+    public String getText(){
+        return textArea.getText();
+    }
+
     public void displayNote(String note) {
-        System.out.println("Displaying" + note);
-        textArea.replaceRange(note, 0, textArea.getLineCount());
+        System.out.println(note);
+        textArea.setText(note);
         
-        this.removeAll();
-        this.add(textArea,BorderLayout.CENTER);
+        //this.removeAll();
+        //this.add(textArea,BorderLayout.CENTER);
         
-        this.revalidate();
-        this.repaint();
+        //this.revalidate();
+        //this.repaint();
     }
     
     public JPanel getPanel(){

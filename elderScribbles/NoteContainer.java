@@ -25,6 +25,7 @@ public class NoteContainer {
     private ArrayList<SidePanelHeader> headers;
 	private String currentNote;
 	private SidePanel sidePanel;
+	private String currentSelected;
     
     public NoteContainer(String fileName, CenterPanel centerpanel, SidePanel sidePanel) {
         this.centerpanel = centerpanel;
@@ -37,7 +38,67 @@ public class NoteContainer {
     }
 	
 	public void selectHeader(String header){
-		centerpanel.displayNote(notes.get(header).getNotes());
+		if (notes.containsKey(header)){
+			centerpanel.displayNote(notes.get(header).getNotes());
+		}
+		else{
+			notes.put(header, new Note(header));
+			centerpanel.displayNote(notes.get(header).getNotes());
+		}
+		currentSelected = header;
+	}
+
+	public void saveCurrent()throws IOException{
+		System.out.println("SAVING");
+		if (currentSelected != null){
+			String text = centerpanel.getText();
+			notes.get(currentSelected).setNotes(text);;
+		File newfile = new File("tempfile.txt");
+		int number = 0;
+		String line = "";
+		boolean writing = false;
+		while(!newfile.createNewFile()){
+			newfile = new File("tempfile" + number + ".txt");
+			number++;
+		}
+		BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(currentNote), "UTF8"));
+		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(newfile)));
+		while((line = reader.readLine()) != null){
+			if (line.startsWith("//*")){
+				if(currentSelected.equals(line.substring(line.lastIndexOf("*")+1))){
+					bw.write(line);
+					bw.newLine();
+					bw.write(text);
+					bw.newLine();
+					writing = true;
+				}
+				else{
+					writing = false;
+					bw.write(line);
+					bw.newLine();
+				}
+			}
+			else{
+				if (!writing){
+					bw.write(line);
+					bw.newLine();
+				}
+				
+			}
+
+		}
+		reader.close();
+		bw.close();
+		File originalfile = new File(currentNote);
+		File tempfile = new File("supertemp.txt");
+		originalfile.renameTo(tempfile);
+		File originalfile2 = new File(currentNote);
+		newfile.renameTo(originalfile2);
+		tempfile.delete();
+		}
+		
+		
+
 	}
 	
 	public void changeToNote(String fileName){
