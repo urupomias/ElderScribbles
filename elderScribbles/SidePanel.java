@@ -1,31 +1,17 @@
 package elderScribbles;
 
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.util.ArrayList;
 import java.awt.FlowLayout;
-
-import javax.swing.JButton;
 import javax.swing.JLabel;
-import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
-import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
-import javax.swing.SpringLayout;
-import javax.swing.SwingConstants;
-import javax.swing.border.Border;
-import javax.swing.border.CompoundBorder;
-import javax.swing.border.EmptyBorder;
-import javax.swing.border.LineBorder;
-import javax.swing.event.SwingPropertyChangeSupport;
-import javax.swing.plaf.ComponentUI;
-
 import java.awt.event.*;
 
 
@@ -53,14 +39,33 @@ public class SidePanel extends JPanel implements KeyListener, ActionListener{
         this.setLayout(new FlowLayout(FlowLayout.LEADING,0,5));
         this.setBackground(Color.gray);
         this.setPreferredSize(new Dimension(230,headers.size() * 30));
-        createTestHeaders();
+        //createTestHeaders();
         
         this.setAutoscrolls(true);
         sPanel = new JScrollPane(this);
         sPanel.getVerticalScrollBar().setUnitIncrement(16);
         sPanel.setPreferredSize(new Dimension(250,250));
-        addNoteheaders(headers);
+        //addNoteheaders(headers);
         
+    }
+
+    public void setHeaders(ArrayList<SidePanelHeader> list){
+        headers = new ArrayList<>();
+        int k = -1;
+        for(int i = 0; i < list.size();i++){
+            if(list.get(i).getIndentation() == 0){
+                k++;
+                headers.add(new ArrayList<SidePanelHeader>());
+                headers.get(k).add(list.get(i));
+            }
+            else{
+                headers.get(k).add(list.get(i));
+            }
+        }
+        this.removeAll();
+        addNoteheaders(headers);
+        this.revalidate();
+        this.repaint();
     }
 
     public JScrollPane getPanel(){
@@ -292,7 +297,6 @@ public class SidePanel extends JPanel implements KeyListener, ActionListener{
                 }
             }
         }
-        System.out.println("Couldnt find the header..");
         return null;
     }
 

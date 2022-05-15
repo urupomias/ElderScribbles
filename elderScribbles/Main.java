@@ -17,6 +17,7 @@ public class Main{
 		MainFrame mainframe = new MainFrame();
 		SidePanel sidePanel = new SidePanel(mainframe);
 		CenterPanel centerpanel = new CenterPanel();
+		NoteContainer noteContainer = new NoteContainer("sdfggh.txt", centerpanel, sidePanel);
 		sidePanel.addMouseListener(mainframe);
 		centerpanel.addMouseListener(mainframe);
 		mainframe.addsPanel(sidePanel.getPanel(), "WEST");

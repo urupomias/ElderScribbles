@@ -52,7 +52,7 @@ public class TopPanel extends JPanel implements ActionListener, KeyListener {
             try{
                 i = file.getCanonicalPath().lastIndexOf("\\");
                 filenames.add(file.getCanonicalPath().substring(i + 1));
-                System.out.println(file.getCanonicalPath().substring(i + 1));
+                //System.out.println(file.getCanonicalPath().substring(i + 1));
             }catch(Exception e){
 
             }

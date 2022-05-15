@@ -3,9 +3,11 @@ package elderScribbles;
 public class Note {
 	
 	String notes;
+	String header;
 	
-	public Note() {
+	public Note(String header) {
 		this.notes = "";
+		this.header = header;
 	}
 	
 	
@@ -19,6 +21,13 @@ public class Note {
 	
 	public void addNotes(String notes) {
 		this.notes = this.notes + notes;
+	}
+
+	public String getHeader(){
+		return header;
+	}
+	public void setHeadet(String header){
+		this.header = header;
 	}
 	
 }
