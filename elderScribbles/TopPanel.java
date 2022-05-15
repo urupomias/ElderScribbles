@@ -70,7 +70,7 @@ public class TopPanel extends JPanel implements ActionListener, KeyListener {
         this.removeAll();
         menu = new JComboBox();
         if (currentSelection != null){
-            menu.addItem(currentSelection);
+            menu.addItem(currentSelection.substring(0, currentSelection.lastIndexOf(".")));
         }
         String c = currentSelection + ".txt";
         for (int i = 0; i < filenames.size();i++){

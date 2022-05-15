@@ -40,13 +40,14 @@ public class Main{
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
-			double mouseX = MouseInfo.getPointerInfo().getLocation().getX();
-        	double mouseY = MouseInfo.getPointerInfo().getLocation().getY();
+			
        	    //System.out.println("X:" + mouseX);
         	//System.out.println("Y:" + mouseY);
 
 			// Checks if the mouse is within the sidepanel, sends update command if yes.
 			try{
+				double mouseX = MouseInfo.getPointerInfo().getLocation().getX();
+        		double mouseY = MouseInfo.getPointerInfo().getLocation().getY();
 				if (mouseX > sidePanel.getPanel().getLocationOnScreen().x && mouseX < sidePanel.getPanel().getLocationOnScreen().x + 230){
 					sidePanel.updateMouse(mouseX, mouseY);
 				}
