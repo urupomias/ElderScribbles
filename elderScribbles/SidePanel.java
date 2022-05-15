@@ -48,10 +48,12 @@ public class SidePanel extends JPanel implements KeyListener, ActionListener{
     private int allowedHierarchy = 2; // This determines how many levels of subheaders you can have.
     private boolean renaming = false;
     private int[] lastpos;
+    private MainFrame fr;
     
     
 
-    public SidePanel(){
+    public SidePanel(MainFrame fr){
+        this.fr = fr;
         this.setLayout(new FlowLayout(FlowLayout.LEADING,0,5));
         this.setBackground(Color.gray);
         this.setPreferredSize(new Dimension(230,5000));
@@ -185,7 +187,8 @@ public class SidePanel extends JPanel implements KeyListener, ActionListener{
         });
         menu.add(item);
         menu.add(item2);
-        menu.show(sPanel, (int)x, (int)y - 50);
+        menu.show(sPanel, fr.getMousePosition().x, fr.getMousePosition().y - 50);
+        //menu.show(sPanel, (int)x, (int)y - 50);
     }
 
     // I forgot why I made this but it works ok.. something to do with making new headers.
@@ -369,7 +372,7 @@ public class SidePanel extends JPanel implements KeyListener, ActionListener{
 
     // Creates a popupwindow to make sure you don't accidentally delete any headers.
     private void removeHeaderPopUp(int index){
-        int option = JOptionPane.showConfirmDialog(sPanel, "Do you want to delete " + textLabels.get(index).getName() + " and all of its subheaders?", "Are you sure?", JOptionPane.YES_NO_OPTION);
+        int option = JOptionPane.showConfirmDialog(fr, "Do you want to delete " + textLabels.get(index).getName() + " and all of its subheaders?", "Are you sure?", JOptionPane.YES_NO_OPTION);
         if (option == 0){
             System.out.println("Yes");
             removeHeader(index);
