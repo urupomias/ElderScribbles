@@ -202,7 +202,7 @@ public class SidePanel extends JPanel implements KeyListener, ActionListener{
                 addLabel(headers.get(i).get(j));
             }
         } 
-        addLabel(new SidePanelHeader("+ ADD NEW HEADER ++", 0));
+        addLabel(new SidePanelHeader("+ Add new header", 0));
     }
 
     // This adds the actual stuff on screen.
@@ -240,7 +240,7 @@ public class SidePanel extends JPanel implements KeyListener, ActionListener{
             label = new JLabel();
             label.setName(h.getText());
             if (h.getIndentation() < allowedHierarchy){
-                text += "+";
+                text += "+ ";
             }
             label.setText(text += h.getText() + "                                                                               ");
             label.setFont(new Font("Calibri", Font.BOLD, (20)));

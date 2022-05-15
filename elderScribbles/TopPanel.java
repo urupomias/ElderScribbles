@@ -8,6 +8,7 @@ import java.awt.GridBagConstraints;
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.JOptionPane;
 import java.io.*;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -90,7 +91,33 @@ public class TopPanel extends JPanel implements ActionListener {
     }
 
     public void newNote(){
+        try{
 
+            String s = (String)JOptionPane.showInputDialog(
+                    fr,
+                    "Name the new note",
+                    "Customized Dialog",
+                    JOptionPane.PLAIN_MESSAGE
+                    );
+
+            //If a string was returned, say so.
+            if ((s != null) && (s.length() > 0)) {
+                File newfile = new File(s + ".txt");
+                if(newfile.createNewFile()){
+                    filenames.add(s + ".txt");
+                    currentSelection = s;
+                }
+                else{
+                    System.out.println("Already exists");
+                }
+
+
+                
+            }
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+        
     }
 
     @Override
@@ -100,9 +127,12 @@ public class TopPanel extends JPanel implements ActionListener {
                 currentSelection = menu.getSelectedItem().toString();
             }
             // Centerpanel.GetNotes(menu.getSelectedItem()); ---- This tells the centerpanel to read from a specific note.
+            else{
+                newNote();
+            } 
             updateTopPanel();
         }
-        else newNote();
+        
         
     }
 
