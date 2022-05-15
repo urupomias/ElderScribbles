@@ -13,6 +13,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import java.awt.event.*;
+import java.io.IOException;
 
 
 public class SidePanel extends JPanel implements KeyListener, ActionListener{
@@ -31,6 +32,7 @@ public class SidePanel extends JPanel implements KeyListener, ActionListener{
     private boolean renaming = false;
     private int[] lastpos;
     private MainFrame fr;
+    private NoteContainer noteContainer;
     
     
 
@@ -47,6 +49,10 @@ public class SidePanel extends JPanel implements KeyListener, ActionListener{
         sPanel.setPreferredSize(new Dimension(250,250));
         //addNoteheaders(headers);
         
+    }
+
+    public void setNoteContainer(NoteContainer noteContainer){
+        this.noteContainer = noteContainer;
     }
 
     public void setHeaders(ArrayList<SidePanelHeader> list){
@@ -85,7 +91,7 @@ public class SidePanel extends JPanel implements KeyListener, ActionListener{
 
     }
 
-    public void updateMouse(double x, double y){
+    public void updateMouse(double x, double y)throws IOException{
         // Does stuff based on where the mouse is and if it was clicked.
         int height = (int)y - this.getLocationOnScreen().y; 
         int left = (int)x - this.getLocationOnScreen().x;
@@ -170,7 +176,7 @@ public class SidePanel extends JPanel implements KeyListener, ActionListener{
     }
 
     // Right click menu.
-    public void popupMenu(int index,double x,double y){
+    public void popupMenu(int index,double x,double y) throws IOException{
         if (index == textLabels.size()-1){
             return;
         }
@@ -184,7 +190,12 @@ public class SidePanel extends JPanel implements KeyListener, ActionListener{
         });
         item2.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e){
-                removeHeaderPopUp(index);
+                try{
+                    removeHeaderPopUp(index);
+                }catch(IOException x){
+                    x.printStackTrace();
+                }
+                
             }
         });
         menu.add(item);
@@ -194,7 +205,7 @@ public class SidePanel extends JPanel implements KeyListener, ActionListener{
     }
 
     // I forgot why I made this but it works ok.. something to do with making new headers.
-    private void headerNamer(int spacing){
+    private void headerNamer(int spacing)throws IOException{
         newLastHeader = false;
         createHeader(textLabels.get(spacing).getName(), ">>NEW HEADER<<");
     }
@@ -313,7 +324,7 @@ public class SidePanel extends JPanel implements KeyListener, ActionListener{
     }
 
     // Handles creating a new header.
-    private void createHeader(String mainheader, String name){
+    private void createHeader(String mainheader, String name) throws IOException{
         System.out.println(mainheader);
         int[] index = getHeader(mainheader);
         SidePanelHeader newheader;
@@ -340,6 +351,9 @@ public class SidePanel extends JPanel implements KeyListener, ActionListener{
             }
             newheader = new SidePanelHeader(newname, index[2] + 1);
         }
+        if(newheader.getIndentation() < 4){
+            noteContainer.addHeader(mainheader, name, newheader.getIndentation());
+        }
         
         headers.get(index[0]).add(index[3] + 1, newheader);;
 
@@ -350,8 +364,22 @@ public class SidePanel extends JPanel implements KeyListener, ActionListener{
     }
 
     // Removes a header in the specified index(1 is highest on the sidepanel and so on), as well as all the children of said header.
-    private void removeHeader(int index){
+    private void removeHeader(int index) throws IOException{
         int[] pos = getHeader(textLabels.get(index).getName());
+        String end = null;
+
+        if(pos[1] > 0){
+            if(pos[1] < pos[3]){
+                end = headers.get(pos[0]).get(pos[3]).getText();
+            }
+            else if (headers.size() > pos[0]+1){
+                end = headers.get(pos[0]+1).get(0).getText();
+            }
+        }
+        else if (headers.size() > pos[0]+1){
+            end = headers.get(pos[0]+1).get(0).getText();
+        }
+
         if (pos[1] == 0){
             headers.remove(pos[0]);
         }
@@ -362,12 +390,13 @@ public class SidePanel extends JPanel implements KeyListener, ActionListener{
                     headers.get(pos[0]).remove(pos[1]);
                 }
                 else {
+                    end = headers.get(pos[0]).get(pos[1]).getText();
                     break;
                 }
             
+            }
         }
-        }
-        
+        noteContainer.deleteHeader(textLabels.get(index).getName(),end);
         this.removeAll();
         addNoteheaders(headers);
         this.revalidate();
@@ -375,7 +404,7 @@ public class SidePanel extends JPanel implements KeyListener, ActionListener{
     }
 
     // Creates a popupwindow to make sure you don't accidentally delete any headers.
-    private void removeHeaderPopUp(int index){
+    private void removeHeaderPopUp(int index) throws IOException{
         int option = JOptionPane.showConfirmDialog(fr, "Do you want to delete " + textLabels.get(index).getName() + " and all of its subheaders?", "Are you sure?", JOptionPane.YES_NO_OPTION);
         if (option == 0){
             System.out.println("Yes");
@@ -386,6 +415,7 @@ public class SidePanel extends JPanel implements KeyListener, ActionListener{
         }
     }
 
+    // For changing to a specific header through the search function.
     public void switchToHeader(String name){
         for (int i = 0; i < textLabels.size();i++){
             if (textLabels.get(i).getName().equals(name)){
@@ -464,6 +494,19 @@ public class SidePanel extends JPanel implements KeyListener, ActionListener{
                     headers.get(headers.size()-1).add(new SidePanelHeader(text, 0));
                     newLastHeader = false;
                     newheader = null;
+                    try{
+                        if(headers.size() == 1){
+                            noteContainer.addHeader(null, text, 0);
+                        }
+                        else{
+                            
+                            noteContainer.addHeader(headers.get(headers.size()-2).get(headers.get(headers.size()-2).size() - 1).getText(), text, 0);
+                        }
+                        
+                    }catch (IOException x){
+                        x.printStackTrace();
+                    }
+                    
                     this.removeAll();
                     addNoteheaders(headers);
                     this.revalidate();
@@ -472,7 +515,12 @@ public class SidePanel extends JPanel implements KeyListener, ActionListener{
                 else if (newheader != null){
                     int index2[] = getHeader(">>NEW HEADER<<");
                     headers.get(index2[0]).remove(index2[3]);
-                    createHeader(textParentHeader, newheader.getText());
+                    try{
+                        createHeader(textParentHeader, newheader.getText());
+                    }catch(IOException x){
+                        x.printStackTrace();
+                    }
+                    
                     newheader = null;
                     
                 }

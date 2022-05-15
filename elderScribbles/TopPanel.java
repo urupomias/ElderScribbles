@@ -25,9 +25,11 @@ public class TopPanel extends JPanel implements ActionListener, KeyListener {
     JTextField search;
     JPopupMenu popupmenu;
     SidePanel sidePanel;
+    NoteContainer noteContainer;
 
-    public TopPanel(MainFrame fr, SidePanel sidePanel){ 
+    public TopPanel(MainFrame fr, SidePanel sidePanel, NoteContainer noteContainer){ 
         this.fr = fr;
+        this.noteContainer = noteContainer;
         this.sidePanel = sidePanel;
         this.setBackground(Color.black);
         this.setPreferredSize(new Dimension(250,30));
@@ -150,10 +152,10 @@ public class TopPanel extends JPanel implements ActionListener, KeyListener {
         if (e.getKeyCode() == KeyEvent.VK_ENTER){
             if(!search.getText().equals("Search")){
                 ArrayList<String> found = new ArrayList<>();
-                found.add("Castle"); // REMOVE THIS LATER!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                //found = Notecontainer.find(search.getText()); --- This will fetch the headers with the included text.
-                ProFinder finde = new ProFinder();
-                found = finde.find(search.getText());
+                //found.add("Castle"); // REMOVE THIS LATER!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                found = noteContainer.find(search.getText()); //--- This will fetch the headers with the included text.
+                //ProFinder finde = new ProFinder();
+                //found = finde.find(search.getText());
                 popupmenu = new JPopupMenu();
                 for (String string : found) {
                     JMenuItem item = new JMenuItem(string);

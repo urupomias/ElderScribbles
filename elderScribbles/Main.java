@@ -5,6 +5,7 @@ import java.awt.GridLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.MouseListener;
+import java.io.IOException;
 import java.awt.event.MouseEvent;
 import java.awt.event.ActionListener;
 import javax.swing.*;
@@ -18,11 +19,12 @@ public class Main{
 		SidePanel sidePanel = new SidePanel(mainframe);
 		CenterPanel centerpanel = new CenterPanel();
 		NoteContainer noteContainer = new NoteContainer("sdfggh.txt", centerpanel, sidePanel);
+		sidePanel.setNoteContainer(noteContainer);
 		sidePanel.addMouseListener(mainframe);
 		centerpanel.addMouseListener(mainframe);
 		mainframe.addsPanel(sidePanel.getPanel(), "WEST");
 		mainframe.addPanel(new CenterPanel().getPanel(), "CENTER");
-		mainframe.addPanel(new TopPanel(mainframe,sidePanel), "NORTH");
+		mainframe.addPanel(new TopPanel(mainframe,sidePanel,noteContainer), "NORTH");
 		mainframe.setVisible();
 
 		
@@ -39,14 +41,19 @@ public class Main{
         	//System.out.println("Y:" + mouseY);
 
 			// Checks if the mouse is within the sidepanel, sends update command if yes.
-			if (mouseX > sidePanel.getPanel().getLocationOnScreen().x && mouseX < sidePanel.getPanel().getLocationOnScreen().x + 230){
-				sidePanel.updateMouse(mouseX, mouseY);
+			try{
+				if (mouseX > sidePanel.getPanel().getLocationOnScreen().x && mouseX < sidePanel.getPanel().getLocationOnScreen().x + 230){
+					sidePanel.updateMouse(mouseX, mouseY);
+				}
+				else{
+					sidePanel.offScreen();
+				}
+				MouseState.getInstance().setState(false);
+				MouseState.getInstance().setState2(false);
+			}catch(IOException e){
+				e.printStackTrace();
 			}
-			else{
-				sidePanel.offScreen();
-			}
-			MouseState.getInstance().setState(false);
-			MouseState.getInstance().setState2(false);
+			
 			//System.out.println(sidePanel.getPanel().getLocationOnScreen());
 		}
 		

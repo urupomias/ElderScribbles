@@ -2,12 +2,15 @@ package elderScribbles;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.util.Scanner;
 
@@ -23,7 +26,7 @@ public class NoteContainer {
     
     public NoteContainer(String fileName, CenterPanel centerpanel, SidePanel sidePanel) {
         this.centerpanel = centerpanel;
-		currentNote = fileName;
+		
 		this.sidePanel = sidePanel;
 		changeToNote(fileName);
 		for (SidePanelHeader sidePanelHeader : headers) {
@@ -37,10 +40,12 @@ public class NoteContainer {
 	
 	public void changeToNote(String fileName){
 		try {
+			currentNote = fileName;
 			this.headers = new ArrayList<SidePanelHeader>();
 			this.notes = new ArrayList<Note>();
             BufferedReader reader = new BufferedReader(new FileReader(fileName));
             String line = reader.readLine();
+			boolean notempty = false;
             while (line != null) {
                 if(line.startsWith("//***")) {
                     SidePanelHeader header = new SidePanelHeader(line.substring(line.lastIndexOf("//***")+5), 2);
@@ -55,6 +60,7 @@ public class NoteContainer {
                     notes.add(note);
                     System.out.println("Note luotu ");
                 }else if(line.startsWith("//*")) {
+					notempty = true;
 					SidePanelHeader header = new SidePanelHeader(line.substring(line.lastIndexOf("//*")+3), 0);
                     headers.add(header);
                     Note note = new Note(line.substring(line.lastIndexOf("//**")+4));
@@ -62,18 +68,143 @@ public class NoteContainer {
                     System.out.println("Note luotu ");
                 }
 				else{
-					notes.get(notes.size()-1).addNotes(line);
+					if (notempty){
+						notes.get(notes.size()-1).addNotes(line);
+					}
+					
 				}
                 line = reader.readLine();
                 System.out.println(line);
                 
             }
+			reader.close();
 			sidePanel.setHeaders(headers);
 
             
         } catch (IOException e) {
             e.printStackTrace();
         }
+	}
+
+	public void addHeader(String prevheader, String newheader, int indentation) throws IOException{
+		if (prevheader == null){
+			System.out.println("its null bro");
+			BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(currentNote)));
+			bw.write("//*" + newheader);
+			bw.close();
+			return;
+		}
+		File newfile = new File("tempfile.txt");
+		int number = 0;
+		String line = "";
+		String headerText = "//*";
+		for (int i = 0; i<indentation;i++){
+			headerText = headerText + "*";
+		}
+		headerText = headerText + newheader;
+		boolean nextIsNewHeader = false;
+		while(!newfile.createNewFile()){
+			newfile = new File("tempfile" + number + ".txt");
+			number++;
+		}
+		BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(currentNote), "UTF8"));
+		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(newfile)));
+		while((line = reader.readLine()) != null){
+			if (line.startsWith("//*")){
+				System.out.println("prevheader: " + prevheader);
+				System.out.println("current line:" + line.substring(line.lastIndexOf("*")+1));
+				if(nextIsNewHeader){
+					bw.write(headerText);
+					bw.newLine();
+					bw.write(line);
+					bw.newLine();
+					nextIsNewHeader = false;
+				}
+				else if (prevheader.equals(line.substring(line.lastIndexOf("*")+1))){
+					nextIsNewHeader = true;
+					bw.write(line);
+					bw.newLine();
+				}
+				else{
+					bw.write(line);
+					bw.newLine();
+				}
+			}
+			else{
+				bw.write(line);
+				bw.newLine();
+			}
+		}
+		if(nextIsNewHeader){
+			bw.write(headerText);
+		}
+		reader.close();
+		bw.close();
+		File originalfile = new File(currentNote);
+		File tempfile = new File("supertemp.txt");
+		originalfile.renameTo(tempfile);
+		File originalfile2 = new File(currentNote);
+		boolean success = newfile.renameTo(originalfile2);
+		tempfile.delete();
+		if(success){
+			System.out.println("Renamed successfully.");
+		}
+	}
+
+	public void deleteHeader(String start, String end) throws IOException{
+		System.out.println(start);
+		System.out.println(end);
+		File newfile = new File("tempfile.txt");
+		int number = 0;
+		String line = "";
+		boolean deleting = false;
+		while(!newfile.createNewFile()){
+			newfile = new File("tempfile" + number + ".txt");
+			number++;
+		}
+		BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(currentNote), "UTF8"));
+		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(newfile)));
+		while((line = reader.readLine()) != null){
+			if (line.startsWith("//*")){
+				if(start.equals(line.substring(line.lastIndexOf("*")+1))){
+					deleting = true;
+				}
+				else if (end != null){
+					if(end.equals(line.substring(line.lastIndexOf("*")+1))){
+						deleting = false;
+						bw.write(line);
+						bw.newLine();
+					}
+					else{
+						break;
+					}
+					
+				}
+				else if (!deleting){
+					bw.write(line);
+					bw.newLine();
+				}
+			}
+			else{
+				if (!deleting){
+					bw.write(line);
+					bw.newLine();
+				}
+				
+			}
+
+		}
+		reader.close();
+		bw.close();
+		File originalfile = new File(currentNote);
+		File tempfile = new File("supertemp.txt");
+		originalfile.renameTo(tempfile);
+		File originalfile2 = new File(currentNote);
+		boolean success = newfile.renameTo(originalfile2);
+		tempfile.delete();
+		if(success){
+			System.out.println("Renamed successfully.");
+		}
 	}
 	
 	
@@ -128,7 +259,7 @@ public class NoteContainer {
             int letter = 0;
             String currentHeader = null;
             while ((line = reader.readLine()) != null){
-                if (line.startsWith("\\*")){
+                if (line.startsWith("//*")){
                     currentHeader = line.substring(line.lastIndexOf("*")+1);
                     continue;
                 }
@@ -159,6 +290,7 @@ public class NoteContainer {
                     }
                 }
             }
+			reader.close();
             return found;
         }catch(IOException e){
             e.printStackTrace();
