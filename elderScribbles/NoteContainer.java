@@ -1,5 +1,6 @@
 package elderScribbles;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -18,7 +19,8 @@ public class NoteContainer {
 	
 
 	
-	private ArrayList<Note> notes;
+	//private ArrayList<Note> notes;
+	private HashMap<String,Note> notes = new HashMap();
     private CenterPanel centerpanel;
     private ArrayList<SidePanelHeader> headers;
 	private String currentNote;
@@ -32,44 +34,51 @@ public class NoteContainer {
 		for (SidePanelHeader sidePanelHeader : headers) {
 			System.out.println(sidePanelHeader.getText());
 		}
-		for (Note note : notes) {
-			System.out.println(note.getNotes());
-		}
     }
 	
+	public void selectHeader(String header){
+		centerpanel.displayNote(notes.get(header).getNotes());
+	}
 	
 	public void changeToNote(String fileName){
 		try {
 			currentNote = fileName;
 			this.headers = new ArrayList<SidePanelHeader>();
-			this.notes = new ArrayList<Note>();
+			//this.notes = new ArrayList<Note>();
+			this.notes = new HashMap<>();
             BufferedReader reader = new BufferedReader(new FileReader(fileName));
             String line = reader.readLine();
 			boolean notempty = false;
+			String currentheader = "";
             while (line != null) {
                 if(line.startsWith("//***")) {
                     SidePanelHeader header = new SidePanelHeader(line.substring(line.lastIndexOf("//***")+5), 2);
                     headers.add(header);
                     Note note = new Note(line.substring(line.lastIndexOf("//**")+4));
-                    notes.add(note);
+                    //notes.add(note);
+					currentheader = header.getText();
+					notes.put(header.getText(), note);
                     System.out.println("Note luotu ");
                 }else if(line.startsWith("//**")) {
                     SidePanelHeader header = new SidePanelHeader(line.substring(line.lastIndexOf("//**")+4), 1);
                     headers.add(header);
                     Note note = new Note(line.substring(line.lastIndexOf("//**")+4));
-                    notes.add(note);
+                    currentheader = header.getText();
+					notes.put(header.getText(), note);
                     System.out.println("Note luotu ");
                 }else if(line.startsWith("//*")) {
 					notempty = true;
 					SidePanelHeader header = new SidePanelHeader(line.substring(line.lastIndexOf("//*")+3), 0);
                     headers.add(header);
                     Note note = new Note(line.substring(line.lastIndexOf("//**")+4));
-                    notes.add(note);
+                    currentheader = header.getText();
+					notes.put(header.getText(), note);
                     System.out.println("Note luotu ");
                 }
 				else{
 					if (notempty){
-						notes.get(notes.size()-1).addNotes(line);
+						//notes.get(notes.size()-1).addNotes(line);
+						notes.get(currentheader).addNotes(line);;
 					}
 					
 				}
@@ -224,9 +233,46 @@ public class NoteContainer {
 	
 	
 	public void addNote(Note notes) {
-		this.notes.add(notes);
+		//this.notes.add(notes);
 	}
 	
+	public void renameHeader(String previousname, String newname) throws IOException{
+		File newfile = new File("tempfile.txt");
+		int number = 0;
+		String line = "";
+		boolean deleting = false;
+		while(!newfile.createNewFile()){
+			newfile = new File("tempfile" + number + ".txt");
+			number++;
+		}
+		BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(currentNote), "UTF8"));
+		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(newfile)));
+		while((line = reader.readLine()) != null){
+			if (line.startsWith("//*")){
+				if(previousname.equals(line.substring(line.lastIndexOf("*")+1))){
+					bw.write(line.substring(0, line.lastIndexOf("*")+1)+newname);
+					bw.newLine();
+				}
+				else{
+					bw.write(line);
+					bw.newLine();
+				}
+			}
+			else{
+				bw.write(line);
+				bw.newLine();
+			}
+		}
+		reader.close();
+		bw.close();
+		File originalfile = new File(currentNote);
+		File tempfile = new File("supertemp.txt");
+		originalfile.renameTo(tempfile);
+		File originalfile2 = new File(currentNote);
+		newfile.renameTo(originalfile2);
+		tempfile.delete();
+
+	}
 	
 	public void saveNotes(String fileName) {
 		try {

@@ -33,6 +33,7 @@ public class SidePanel extends JPanel implements KeyListener, ActionListener{
     private int[] lastpos;
     private MainFrame fr;
     private NoteContainer noteContainer;
+    private String oldname;
     
     
 
@@ -136,6 +137,7 @@ public class SidePanel extends JPanel implements KeyListener, ActionListener{
                 }
                 else {
                     textLabels.get(spacing).setForeground(Color.GREEN); // This highlights the selected header with green
+                    noteContainer.selectHeader(textLabels.get(spacing).getName());
                     selectedName = textLabels.get(spacing).getName();
                     if (currentSelected >= 0 && currentSelected != spacing){
                         textLabels.get(currentSelected).setForeground(Color.BLACK); // Unhighlights the previously selected header
@@ -437,6 +439,7 @@ public class SidePanel extends JPanel implements KeyListener, ActionListener{
         }
         renaming = true;
         int[] pos = getHeader(textLabels.get(index).getName());
+        oldname = textLabels.get(index).getName();
         lastpos = pos;
         //headers.get(pos[0]).get(pos[1]).setText(">>RENAME HEADER<<");
         headers.get(pos[0]).get(pos[1]).setIndentation(25);
@@ -478,6 +481,12 @@ public class SidePanel extends JPanel implements KeyListener, ActionListener{
                 headers.get(lastpos[0]).get(lastpos[1]).setText(text);
                 headers.get(lastpos[0]).get(lastpos[1]).setIndentation(lastpos[2]);
                 renaming = false;
+                try{
+                    noteContainer.renameHeader(oldname, text);
+                }catch (IOException x){
+                    x.printStackTrace();
+                }
+                
                 this.removeAll();
                 addNoteheaders(headers);
                 this.revalidate();
