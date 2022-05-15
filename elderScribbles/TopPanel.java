@@ -152,6 +152,8 @@ public class TopPanel extends JPanel implements ActionListener, KeyListener {
                 ArrayList<String> found = new ArrayList<>();
                 found.add("Castle"); // REMOVE THIS LATER!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                 //found = Notecontainer.find(search.getText()); --- This will fetch the headers with the included text.
+                ProFinder finde = new ProFinder();
+                found = finde.find(search.getText());
                 popupmenu = new JPopupMenu();
                 for (String string : found) {
                     JMenuItem item = new JMenuItem(string);

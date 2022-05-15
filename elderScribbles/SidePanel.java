@@ -26,11 +26,7 @@ import javax.swing.border.LineBorder;
 import javax.swing.event.SwingPropertyChangeSupport;
 import javax.swing.plaf.ComponentUI;
 
-import java.awt.event.MouseEvent;
 import java.awt.event.*;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.awt.event.ActionListener;
 
 
 public class SidePanel extends JPanel implements KeyListener, ActionListener{
@@ -506,6 +502,12 @@ public class SidePanel extends JPanel implements KeyListener, ActionListener{
     @Override
     public void keyReleased(KeyEvent e) {
         
+        
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        // TODO Auto-generated method stub
         
     }
 }

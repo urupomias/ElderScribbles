@@ -26,6 +26,11 @@ public class CenterPanel extends JPanel {
         
     }
 
+    public void displayNote(String note) {
+        textArea.setText("");
+        textArea.setText(note);
+    }
+    
     public JPanel getPanel(){
         return panel;
     }
