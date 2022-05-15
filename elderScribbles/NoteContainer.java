@@ -1,7 +1,6 @@
 package elderScribbles;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -10,10 +9,9 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
-import java.util.Scanner;
+
 
 public class NoteContainer {
 	
@@ -38,6 +36,12 @@ public class NoteContainer {
     }
 	
 	public void selectHeader(String header){
+		try{
+			saveCurrent();
+		}catch(IOException x){
+			x.printStackTrace();
+		}
+		
 		if (notes.containsKey(header)){
 			centerpanel.displayNote(notes.get(header).getNotes());
 		}
@@ -103,9 +107,9 @@ public class NoteContainer {
 	
 	public void changeToNote(String fileName){
 		try {
+			saveCurrent();
 			currentNote = fileName;
 			this.headers = new ArrayList<SidePanelHeader>();
-			//this.notes = new ArrayList<Note>();
 			this.notes = new HashMap<>();
             BufferedReader reader = new BufferedReader(new FileReader(fileName));
             String line = reader.readLine();
@@ -116,7 +120,6 @@ public class NoteContainer {
                     SidePanelHeader header = new SidePanelHeader(line.substring(line.lastIndexOf("//***")+5), 2);
                     headers.add(header);
                     Note note = new Note(line.substring(line.lastIndexOf("//**")+4));
-                    //notes.add(note);
 					currentheader = header.getText();
 					notes.put(header.getText(), note);
                     System.out.println("Note luotu ");
@@ -138,7 +141,6 @@ public class NoteContainer {
                 }
 				else{
 					if (notempty){
-						//notes.get(notes.size()-1).addNotes(line);
 						notes.get(currentheader).addNotes(line);;
 					}
 					
@@ -157,6 +159,7 @@ public class NoteContainer {
 	}
 
 	public void addHeader(String prevheader, String newheader, int indentation) throws IOException{
+		saveCurrent();
 		if (prevheader == null){
 			System.out.println("its null bro");
 			BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(currentNote)));
@@ -222,6 +225,7 @@ public class NoteContainer {
 	}
 
 	public void deleteHeader(String start, String end) throws IOException{
+		saveCurrent();
 		System.out.println(start);
 		System.out.println(end);
 		File newfile = new File("tempfile.txt");
@@ -274,30 +278,8 @@ public class NoteContainer {
 		}
 	}
 	
-	
-	public void NewNoteContainer(String fileName) {
-		//Dunno if you do this here, probably not
-		//ArrayList<Note> notes = new ArrayList<Note>();
-		try {
-		      File myObj = new File(fileName);
-		      if (myObj.createNewFile()) {
-		        System.out.println("File created: " + myObj.getName());
-		      } else {
-		        System.out.println("File already exists.");
-		      }
-		    } catch (IOException e) {
-		      System.out.println("An error occurred.");
-		      e.printStackTrace();
-		    }
-	}
-		
-	
-	
-	public void addNote(Note notes) {
-		//this.notes.add(notes);
-	}
-	
 	public void renameHeader(String previousname, String newname) throws IOException{
+		saveCurrent();
 		File newfile = new File("tempfile.txt");
 		int number = 0;
 		String line = "";
@@ -332,25 +314,7 @@ public class NoteContainer {
 		File originalfile2 = new File(currentNote);
 		newfile.renameTo(originalfile2);
 		tempfile.delete();
-
-	}
-	
-	public void saveNotes(String fileName) {
-		try {
-		      FileWriter myWriter = new FileWriter(fileName);
-		      myWriter.write("//*");
-		      //Here we need a for -loop if theres multiple notes
-		      for(int i=0; i <= notes.size(); i++) {
-		    	  myWriter.write(notes.get(0).getNotes());
-		    	  myWriter.write("//*");
-		      }
-		      
-		      myWriter.close();
-		      System.out.println("Successfully wrote to the file.");
-		    } catch (IOException e) {
-		      System.out.println("An error occurred.");
-		      e.printStackTrace();
-		    }
+		changeToNote(currentNote);
 	}
 
 	public ArrayList<String> find(String searchterm){

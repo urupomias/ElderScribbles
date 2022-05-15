@@ -1,20 +1,9 @@
 package elderScribbles;
 
 import javax.swing.JFrame;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Font;
 import javax.swing.*;
-import javax.swing.border.Border;
-
-//import org.w3c.dom.events.MouseEvent;
-
 import java.awt.BorderLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.KeyListener;
@@ -25,17 +14,19 @@ public class MainFrame extends JFrame implements MouseListener, KeyListener{
     SidePanel sidePanel;
 
     
-   
+
 
     public MainFrame(){
-        //frame = new JFrame();
         this.setTitle("Elder Scribbles");
-        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         this.setSize(1500,800);
         this.setLayout(new BorderLayout());
         this.addMouseListener(this);
-        //this.addKeyListener(this);
         
+    }
+
+    public void setCloseOperation(WindowL l){
+        this.addWindowListener(l);
     }
 
     public JFrame getFrame(){
@@ -114,19 +105,19 @@ public class MainFrame extends JFrame implements MouseListener, KeyListener{
 
     @Override
     public void keyTyped(KeyEvent e) {
-        // TODO Auto-generated method stub
+
         
     }
 
     @Override
     public void keyPressed(KeyEvent e) {
-        // TODO Auto-generated method stub
+
         
     }
 
     @Override
     public void keyReleased(KeyEvent e) {
-        // TODO Auto-generated method stub
+
         
     }
 

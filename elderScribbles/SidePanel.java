@@ -204,7 +204,6 @@ public class SidePanel extends JPanel implements KeyListener, ActionListener{
         menu.add(item);
         menu.add(item2);
         menu.show(sPanel, fr.getMousePosition().x, fr.getMousePosition().y - 50);
-        //menu.show(sPanel, (int)x, (int)y - 50);
     }
 
     // I forgot why I made this but it works ok.. something to do with making new headers.

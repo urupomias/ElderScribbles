@@ -1,14 +1,7 @@
 package elderScribbles;
 import java.awt.MouseInfo;
 import java.util.concurrent.TimeUnit;
-import java.awt.GridLayout;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.event.MouseListener;
 import java.io.IOException;
-import java.awt.event.MouseEvent;
-import java.awt.event.ActionListener;
-import javax.swing.*;
 
 public class Main{
 	
@@ -29,6 +22,7 @@ public class Main{
 		SidePanel sidePanel = new SidePanel(mainframe);
 		CenterPanel centerpanel = new CenterPanel();
 		NoteContainer noteContainer = new NoteContainer(startuppane.getChosenNotes(), centerpanel, sidePanel);
+		mainframe.setCloseOperation(new WindowL(noteContainer));
 		sidePanel.setNoteContainer(noteContainer);
 		sidePanel.addMouseListener(mainframe);
 		centerpanel.addMouseListener(mainframe);
@@ -64,7 +58,7 @@ public class Main{
 			}catch(IOException e){
 				e.printStackTrace();
 			}
-			if(counter == 2000){
+			if(counter == 20000){
 				try{
 					noteContainer.saveCurrent();
 					counter = 0;
